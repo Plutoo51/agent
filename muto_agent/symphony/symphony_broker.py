@@ -132,6 +132,10 @@ class MQTTBroker:
 
             response_data = self._handle_request(coa_request.metadata, method, route, body)
 
+            if response_data is None:
+                self.logger.debug("Request ignored by provider (Target mismatch). No response will be published.")
+                return
+
             # Create COAResponse and publish back
             if isinstance(response_data, dict) and "error" in response_data:
                 coa_response = COAResponse.error(response_data["error"])
@@ -177,30 +181,30 @@ class MQTTBroker:
         else:
             return {"error": "Route not found"}
 
-    def _apply(self, metadata: dict[str, Any], data: dict[str, Any]) -> str:
+    def _apply(self, metadata: dict[str, Any], data: dict[str, Any]) -> str | None:
         """Apply/deploy components from deployment specification."""
         deployment = from_dict(data, DeploymentSpec)
         components = deployment.get_components_slice()
         return self.apply(metadata, components)
 
-    def _remove(self, metadata: dict[str, Any], data: dict[str, Any]) -> str:
+    def _remove(self, metadata: dict[str, Any], data: dict[str, Any]) -> str | None:
         """Remove components from deployment specification."""
         deployment = from_dict(data, DeploymentSpec)
         components = deployment.get_components_slice()
         return self.remove(metadata, components)
 
-    def _get(self, metadata: dict[str, Any], data: dict[str, Any]) -> Any:
+    def _get(self, metadata: dict[str, Any], data: dict[str, Any]) -> Any | None:
         """Get component states from deployment specification."""
         deployment = from_dict(data, DeploymentSpec)
         components = deployment.get_components_slice()
         return self.get(metadata, components)
 
-    def _needs_update(self, metadata: dict[str, Any], data: dict[str, Any]) -> bool:
+    def _needs_update(self, metadata: dict[str, Any], data: dict[str, Any]) -> bool | None:
         """Check if components need updates from comparison pack."""
         pack = from_dict(data, ComparisonPack)
         return self.needs_update(metadata, pack)
 
-    def _needs_remove(self, metadata: dict[str, Any], data: dict[str, Any]) -> bool:
+    def _needs_remove(self, metadata: dict[str, Any], data: dict[str, Any]) -> bool | None:
         """Check if components need removal from comparison pack."""
         pack = from_dict(data, ComparisonPack)
         return self.needs_remove(metadata, pack)

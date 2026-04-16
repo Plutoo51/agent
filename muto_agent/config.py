@@ -46,6 +46,7 @@ class SymphonyConfig:
     target: str = "muto-target"
     enabled: bool = False
     topic_prefix: str = "symphony"
+    properties_group: str = "fleet-1"
     api_url: str = ("http://localhost:8082/v1alpha2/",)
     provider_name: str = ("providers.target.mqtt",)
     broker_address: str = ("tcp://mosquitto:1883",)
@@ -139,6 +140,7 @@ class ConfigurationManager:
                 target=self._get_parameter("symphony_target_name", "muto-target"),
                 enabled=self._get_parameter("symphony_enabled", False),
                 topic_prefix=self._get_parameter("symphony_topic_prefix", "symphony"),
+                properties_group=self._get_parameter("symphony_properties_group", ""),
                 api_url=self._get_parameter("symphony_api_url", "http://localhost:8082/v1alpha2/"),
                 provider_name=self._get_parameter("symphony_provider_name", "providers.target.mqtt"),
                 broker_address=self._get_parameter("symphony_broker_address", "tcp://mosquitto:1883"),
@@ -209,6 +211,7 @@ class ConfigurationManager:
             ("symphony_prefix", "muto"),
             ("symphony_target_name", "muto-device-001"),
             ("symphony_topic_prefix", "symphony"),
+            ("symphony_properties_group", "fleet-1"),
             ("symphony_enable", False),
             ("symphony_api_url", "http://localhost:8082/v1alpha2/"),
             ("symphony_user", "admin"),

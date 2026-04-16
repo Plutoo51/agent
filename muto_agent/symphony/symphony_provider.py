@@ -179,6 +179,9 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
                 "spec": {
                     "displayName": symphony.target,
                     "forceRedeploy": True,
+                    "properties": {
+                        "group": symphony.properties_group
+                    },
                     "topologies": [
                         {
                             "bindings": [
@@ -300,7 +303,7 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
         # Auto-register target after initialization
         self.register_target()
 
-    def apply(self, metadata: dict[str, Any], components: list[ComponentSpec]) -> str:
+    def apply(self, metadata: dict[str, Any], components: list[ComponentSpec]) -> str | None:
         """
         Apply/deploy components.
 
@@ -315,15 +318,21 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
         Returns:
             JSON string containing deployment results.
         """
-        self.logger.info(f"Symphony apply: deploying {len(components)} components")
+        target_name = metadata.get("active-target")
+        my_target = self.get_target_name()
+
+        if target_name and target_name != my_target:
+            self.logger.info(f"Symphony apply ignored: Request target '{target_name}' does not match local target '{my_target}'")
+            return None
+
+        target_name = target_name or my_target
+        self.logger.info(f"Symphony apply: deploying {len(components)} components for {target_name}")
 
         # Use summary models
         result = SummarySpec(target_count=1)
         target_result = TargetResultSpec()
         successes = 0
         failures = 0
-
-        target_name = metadata.get("active-target", self.get_target_name())
 
         for component in components:
             component_name = component.name or "unnamed-component"
@@ -386,7 +395,7 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
 
         return json.dumps(result.to_dict(), indent=2)
 
-    def remove(self, metadata: dict[str, Any], components: list[ComponentSpec]) -> str:
+    def remove(self, metadata: dict[str, Any], components: list[ComponentSpec]) -> str | None:
         """
         Remove components.
 
@@ -400,13 +409,20 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
         Returns:
             JSON string containing removal results.
         """
-        self.logger.info(f"Symphony remove: removing {len(components)} components")
+        target_name = metadata.get("active-target")
+        my_target = self.get_target_name()
+
+        if target_name and target_name != my_target:
+            self.logger.info(f"Symphony remove ignored: Request target '{target_name}' does not match local target '{my_target}'")
+            return None
+
+        target_name = target_name or my_target
+        self.logger.info(f"Symphony remove: removing {len(components)} components for {target_name}")
 
         result = SummarySpec(target_count=1, is_removal=True)
         target_result = TargetResultSpec()
         successes = 0
         failures = 0
-        target_name = metadata.get("active-target", self.get_target_name())
 
         for component in components:
             component_name = component.name or "unnamed-component"
@@ -464,7 +480,7 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
 
         return json.dumps(result.to_dict(), indent=2)
 
-    def get(self, metadata: dict[str, Any], components: list[ComponentSpec]) -> Any:
+    def get(self, metadata: dict[str, Any], components: list[ComponentSpec]) -> Any | None:
         """
         Get current component states.
 
@@ -478,6 +494,13 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
         Returns:
             List of component data dictionaries.
         """
+        target_name = metadata.get("active-target")
+        my_target = self.get_target_name()
+        
+        if target_name and target_name != my_target:
+            self.logger.info(f"Symphony get ignored: Request target '{target_name}' does not match local target '{my_target}'")
+            return None
+
         self.logger.info(f"Symphony get: retrieving state for {len(components)} components")
 
         # Determine which components to include in the response
@@ -597,7 +620,7 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
             self.logger.error(f"Failed to publish stack action '{method}': {exc}")
             return False
 
-    def needs_update(self, metadata: dict[str, Any], pack: ComparisonPack) -> bool:
+    def needs_update(self, metadata: dict[str, Any], pack: ComparisonPack) -> bool | None:
         """
         Check if components need updates by comparing desired vs current state.
 
@@ -608,6 +631,13 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
         Returns:
             True if updates are needed, False otherwise.
         """
+        target_name = metadata.get("active-target")
+        my_target = self.get_target_name()
+
+        if target_name and target_name != my_target:
+            self.logger.info(f"Symphony needs_update ignored: Request target '{target_name}' does not match local target '{my_target}'")
+            return None
+
         self.logger.info(f"Checking update need for {len(pack.desired)} desired vs {len(pack.current)} current")
 
         # Create lookup for current components
@@ -630,8 +660,15 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
         self.logger.info("No components need updates")
         return False
 
-    def needs_remove(self, metadata: dict[str, Any], pack: ComparisonPack) -> bool:
+    def needs_remove(self, metadata: dict[str, Any], pack: ComparisonPack) -> bool | None:
         """Check if components need removal by comparing desired vs current state."""
+        target_name = metadata.get("active-target")
+        my_target = self.get_target_name()
+
+        if target_name and target_name != my_target:
+            self.logger.info(f"Symphony needs_remove ignored: Request target '{target_name}' does not match local target '{my_target}'")
+            return None
+
         self.logger.info(f"Checking removal need for {len(pack.desired)} desired vs {len(pack.current)} current")
 
         # Create lookup for desired components
@@ -744,6 +781,11 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
     def get_target_name(self) -> str:
         """Get the Symphony target name."""
         return self._config.symphony.target
+    
+    def get_properties_group(self) -> str:
+        """Get the Symphony properties group."""
+        return self._config.symphony.properties_group
+
 
     def get_component_count(self) -> int:
         """Get the number of managed components."""
