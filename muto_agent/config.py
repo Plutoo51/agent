@@ -68,6 +68,7 @@ class TopicConfig:
     agent_to_commands_topic: str = "agent_to_command"
     commands_to_agent_topic: str = "command_to_agent"
     thing_messages_topic: str = "thing_messages"
+    mqtt_topic: str = "mqtt"
 
 
 @dataclass
@@ -160,6 +161,7 @@ class ConfigurationManager:
                 agent_to_commands_topic=self._get_parameter("agent_to_commands_topic", "agent_to_command"),
                 commands_to_agent_topic=self._get_parameter("commands_to_agent_topic", "command_to_agent"),
                 thing_messages_topic=self._get_parameter("thing_messages_topic", "thing_messages"),
+                mqtt_topic=self._get_parameter("mqtt_topic", "mqtt"),
             )
 
             self._config = AgentConfig(mqtt=mqtt_config, topics=topic_config, symphony=symphony_config)
@@ -203,6 +205,7 @@ class ConfigurationManager:
             ("agent_to_commands_topic", "agent_to_command"),
             ("commands_to_agent_topic", "command_to_agent"),
             ("thing_messages_topic", "thing_messages"),
+            ("mqtt_topic", "mqtt"),
             ("symphony_enabled", False),
             ("symphony_host", "sandbox.composiv.ai"),
             ("symphony_port", 1883),
