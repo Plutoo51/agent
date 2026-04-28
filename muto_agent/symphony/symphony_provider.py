@@ -500,7 +500,7 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
         """
         target_name = metadata.get("active-target")
         my_target = self.get_target_name()
-        
+
         if target_name and target_name != my_target:
             self.logger.info(
                 f"Symphony get ignored: Request target '{target_name}' does not match local target '{my_target}'"
@@ -642,7 +642,8 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
 
         if target_name and target_name != my_target:
             self.logger.info(
-                f"Symphony needs_update ignored: Request target '{target_name}' does not match local target '{my_target}'"
+                f"Symphony needs_update ignored: Request target '{target_name}' "
+                f"does not match local target '{my_target}'"
             )
             return None
 
@@ -675,7 +676,8 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
 
         if target_name and target_name != my_target:
             self.logger.info(
-                f"Symphony needs_remove ignored: Request target '{target_name}' does not match local target '{my_target}'"
+                f"Symphony needs_remove ignored: Request target '{target_name}' "
+                f"does not match local target '{my_target}'"
             )
             return None
 
@@ -791,7 +793,7 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
     def get_target_name(self) -> str:
         """Get the Symphony target name."""
         return self._config.symphony.target
-    
+
     def get_properties_group(self) -> str:
         """Get the Symphony properties group."""
         return self._config.symphony.properties_group
