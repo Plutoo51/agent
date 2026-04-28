@@ -18,16 +18,15 @@ import threading
 
 # Third-party imports
 import rclpy
-from std_msgs.msg import String
 from muto_msgs.msg import Gateway, MutoActionMeta, Thing, ThingHeaders
 from paho.mqtt.client import MQTTMessage
 from paho.mqtt.packettypes import PacketTypes
 from paho.mqtt.properties import Properties
-
-from .config import AgentConfig, ConfigurationManager
-from .exceptions import ConfigurationError, ConnectionError
+from std_msgs.msg import String
 
 # Local imports
+from .config import AgentConfig, ConfigurationManager
+from .exceptions import ConfigurationError, ConnectionError
 from .interfaces import BaseNode
 from .mqtt_manager import DittoMessageHandler, MQTTConnectionManager
 
@@ -174,18 +173,18 @@ class MQTT(BaseNode):
     def _mqtt_message_callback(self, data):
         """Handles incoming MQTT message callbacks and publishes to mqtt environment.
 
-        Constructs a specific twin topic string based on the instance's MQTT 
-        configuration (prefix, namespace, and name) and publishes the received 
+        Constructs a specific twin topic string based on the instance's MQTT
+        configuration (prefix, namespace, and name) and publishes the received
         payload to that topic using the internal MQTT manager.
 
         Args:
-            data: An object containing the incoming message payload. It is 
-                expected to have a `data` attribute containing the raw 
+            data: An object containing the incoming message payload. It is
+                expected to have a `data` attribute containing the raw
                 information to be published.
 
         Raises:
-            AttributeError: If the `data` object does not have a `data` 
-                attribute, or if `self._config` or `self._mqtt_manager` are 
+            AttributeError: If the `data` object does not have a `data`
+                attribute, or if `self._config` or `self._mqtt_manager` are
                 not properly initialized.
         """
         twin_topic = f"{self._config.mqtt.prefix}/{self._config.mqtt.namespace}:{self._config.mqtt.name}"
