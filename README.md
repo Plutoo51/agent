@@ -7,6 +7,10 @@
 
 **Muto Agent** is the agnostic communication bridge within Eclipse Muto's declarative orchestrator for ROS software stacks on automotive edge devices. As the robot's secure gateway to any cloud backend, it features a pluggable architecture that makes Muto fundamentally agnostic to external systems, enabling interoperability with various cloud orchestrators and communication standards.
 
+## Part of Eclipse Muto
+
+Eclipse Muto is an adaptive framework and runtime for managing ROS 2 software stacks on autonomous vehicles and edge devices. See the [main repository](https://github.com/eclipse-muto/muto) for full documentation.
+
 ## Overview
 
 The Agent is Eclipse Muto's **agnostic communication bridge** - the robot's secure gateway to any cloud backend. Its defining characteristic is a **pluggable architecture** that decouples Muto's core logic from particular cloud orchestrators or communication standards, providing **interoperability** and **flexibility**.
