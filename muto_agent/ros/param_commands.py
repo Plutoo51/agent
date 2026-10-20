@@ -27,6 +27,7 @@ class ParamCommands:
         node: RosCommnadsPlugin class which is a subclass of Node.
 
     """
+
     SAFE_PARAMS = {"namespace", "name", "stack_topic", "type", "anonymous"}
 
     def __init__(self, node):

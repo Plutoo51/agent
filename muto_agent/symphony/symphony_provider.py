@@ -179,9 +179,7 @@ class MutoSymphonyProvider(BaseNode, SymphonyProvider):
                 "spec": {
                     "displayName": symphony.target,
                     "forceRedeploy": True,
-                    "properties": {
-                        "group": symphony.properties_group
-                    },
+                    "properties": {"group": symphony.properties_group},
                     "topologies": [
                         {
                             "bindings": [
