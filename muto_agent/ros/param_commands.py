@@ -27,6 +27,7 @@ class ParamCommands:
         node: RosCommnadsPlugin class which is a subclass of Node.
 
     """
+    SAFE_PARAMS = {"namespace", "name", "stack_topic", "type", "anonymous"}
 
     def __init__(self, node):
         self.node = node
@@ -54,7 +55,7 @@ class ParamCommands:
         parameters = self.node.get_parameters_by_prefix("")
 
         for parameter in parameters:
-            if not parameter.startswith("commands"):
+            if parameter in self.SAFE_PARAMS:
                 value = self.node.get_parameter(parameter).value
                 result["params"].append({"name": parameter, "value": value})
 
@@ -81,11 +82,12 @@ class ParamCommands:
 
         result = {"status": "NOTFOUND"}
 
-        try:
-            value = self.node.get_parameter(requested_param).value
-            result = {"name": requested_param, "value": value}
-        except Exception:
-            self.node.get_logger().error(f"{requested_param} not found.")
+        if requested_param in self.SAFE_PARAMS:
+            try:
+                value = self.node.get_parameter(requested_param).value
+                result = {"name": requested_param, "value": value}
+            except Exception:
+                self.node.get_logger().error(f"{requested_param} not found.")
 
         response.output = self.node.construct_command_output_message(result)
 
